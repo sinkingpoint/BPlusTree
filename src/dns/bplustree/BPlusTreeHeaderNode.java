@@ -3,10 +3,10 @@ package dns.bplustree;
 import dns.Block;
 import dns.Bytes;
 
-public class BPlusTreeHeaderNode<K extends Comparable<K>, V> implements BPlusTreeNode<K, V>{
+public class BPlusTreeHeaderNode<K extends Comparable<K>, V> extends BPlusTreeNode<K, V>{
 
   private Integer root;
-  
+
   public BPlusTreeHeaderNode(){}
   public BPlusTreeHeaderNode(byte[] data){
     int res = Bytes.bytesToInt(data, 0);
@@ -17,15 +17,17 @@ public class BPlusTreeHeaderNode<K extends Comparable<K>, V> implements BPlusTre
       root = res;
     }
   }
-  
+
   public Integer getRoot(){
     return root;
   }
-  
+
   public void setRoot(Integer _root){
     root = _root;
+    setChanged();
+    notifyObservers("Root Changed");
   }
-  
+
   @Override
   public V find(K key) {
     throw new UnsupportedOperationException();
@@ -48,7 +50,6 @@ public class BPlusTreeHeaderNode<K extends Comparable<K>, V> implements BPlusTre
 
   @Override
   public Block write() {
-    System.out.println("Writing header info");
     Block block = new Block(BPlusTreeFile.BLOCK_SIZE);
     if(root == null){
       block.setInt(-1, 0);
@@ -56,7 +57,7 @@ public class BPlusTreeHeaderNode<K extends Comparable<K>, V> implements BPlusTre
     else{
       block.setInt(root, 0);
     }
-    
+
     return block;
   }
 

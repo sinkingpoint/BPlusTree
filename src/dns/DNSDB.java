@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
+import dns.bplustree.BPlusTreeFile;
 import dns.bplustree.KeyValuePair;
 
 public class DNSDB {
@@ -14,14 +16,17 @@ public class DNSDB {
 	private BPlusTreeIntToString60 hostNames;
 	private BPlusTreeString60toInt ipAddresses;
 
+	private static final String HOSTNAMES_FILE = "hostnames.b+tree";
+	private static final String IPS_FILE = "ipds.b+tree";
+
 	public DNSDB() {
-		hostNames = new BPlusTreeIntToString60("hostnames.b+tree");
-		ipAddresses = new BPlusTreeString60toInt("ips.b+tree");
+		hostNames = new BPlusTreeIntToString60(HOSTNAMES_FILE);
+		ipAddresses = new BPlusTreeString60toInt(IPS_FILE);
 	}
 
 	/**
 	 * Loads all the host-IP pairs into the B+ trees.
-	 * 
+	 *
 	 * @param fileName
 	 */
 	public void load(File file) {
@@ -29,6 +34,12 @@ public class DNSDB {
 			System.out.println(file + " not found");
 			return;
 		}
+
+		if(new File(HOSTNAMES_FILE).length() > BPlusTreeFile.BLOCK_SIZE && new File(IPS_FILE).length() > BPlusTreeFile.BLOCK_SIZE){
+			System.out.println("Tree found on disk. No need to reconstruct");
+			return;
+		}
+
 		BufferedReader data;
 		System.out.println("Loading....");
 		try {
@@ -49,15 +60,15 @@ public class DNSDB {
 		}
 		System.out.println("Loading Done");
 	}
-	
+
 	public void flush() throws IOException{
-	  hostNames.flush();
-	  ipAddresses.flush();
+		hostNames.flush();
+		ipAddresses.flush();
 	}
 
 	/**
 	 * Finds an IP address given the host name.
-	 * 
+	 *
 	 * @param hostName
 	 * @return integer representation of an IP address, null if not found.
 	 */
@@ -67,7 +78,7 @@ public class DNSDB {
 
 	/**
 	 * Finds the host name given the IP address.
-	 * 
+	 *
 	 * @param ip
 	 * @return null if not found
 	 */
@@ -77,7 +88,7 @@ public class DNSDB {
 
 	/**
 	 * Tests whether the given IP-name pair is valid.
-	 * 
+	 *
 	 * @param ip
 	 *            integer representation of an IP address
 	 * @param hostName
@@ -97,7 +108,7 @@ public class DNSDB {
 
 	/**
 	 * Tests whether the given name-IP pair is valid.
-	 * 
+	 *
 	 * @param hostName
 	 * @param ip
 	 *            integer representation of an IP address
@@ -117,7 +128,7 @@ public class DNSDB {
 
 	/**
 	 * Adds an host-IP pair to the database (ie, to both B+ trees)
-	 * 
+	 *
 	 * @param hostName
 	 * @param ip
 	 * @return whether successfully added to the database
@@ -130,9 +141,11 @@ public class DNSDB {
 	 * Prints (to System.out) all the pairs in the HostNames index.
 	 */
 	public void iterateAll() {
-		for(KeyValuePair<Integer, String> pair : hostNames.entryList()){
-			System.out.println(IPToString(pair.getKey()) + " --> " + pair.getValue());
+		for(KeyValuePair<Integer, String> entry : hostNames){
+			System.out.println(entry);
 		}
+
+		//System.out.println("Iterated " + entries.size() + " values");
 	}
 
 	// FOR MARKING! PLEASE DO NOT MODIFY.
@@ -142,26 +155,20 @@ public class DNSDB {
 	 */
 	public void testAllPairs(File file) {
 		try {
-			int missingCount = 0;
 			Scanner scan = new Scanner(file);
 			while (scan.hasNextLine()) {
 				String[] line = scan.nextLine().split("\t");
 				if (line.length != 2)
 					continue;
-				int ip = stringToIP(line[1].trim());
-				String host = line[0].trim();
+				int ip = stringToIP(line[0].trim());
+				String host = line[1].trim();
 				if (!testPair(ip, host)) {
-					System.out.println("Missing: " + IPToString(ip) + " -> "
-							+ host);
-					missingCount ++;
+					System.out.println("Missing: " + IPToString(ip) + " -> " + host);
 				}
 				if (!testPair(host, ip)) {
-					System.out.println("Missing: " + host + " -> "
-							+ IPToString(ip));
-					missingCount ++;
+					System.out.println("Missing: " + host + " -> " + IPToString(ip));
 				}
 			}
-			System.out.println("Missing " + missingCount + "entries");
 			scan.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
