@@ -80,7 +80,7 @@ public class BPlusTreeFile<K extends Comparable<K>, V> extends BlockFile impleme
 	 * Gets the node with the given ID, returning the cached copy if it exists(It has changes that are not written to disk)
 	 * and loads it from disk if it is not
 	 * @param id The ID to get
-	 * @return The node at the corresponging ID
+	 * @return The node at the corresponding ID
 	 */
 	public BPlusTreeNode<K, V> getNode(int id) {
 		// If the node is in memory

@@ -78,7 +78,7 @@ public class BPlusTreeLeafNode<K extends Comparable<K>, V> extends BPlusTreeNode
 		    	return;
 		    }
 
-		    if(cmp == 0){
+		    if(cmp == 0 && !BPlusTree.canHaveMultipleValues){
 		      values.remove(i);
 		    }
 

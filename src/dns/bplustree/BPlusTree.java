@@ -27,6 +27,8 @@ public class BPlusTree<K extends Comparable<K>, V> implements Iterable<KeyValueP
 	//Info regarding the size/type of the value
     private BPlusTreeType<V> valueType;
 
+    public static final boolean canHaveMultipleValues = true;
+
     /**
      * Constructs a new BPlusTree from the given file, with the given type descriptions
      * @param fileName The file name this tree is backed by

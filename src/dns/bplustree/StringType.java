@@ -6,13 +6,14 @@ import dns.Bytes;
 public class StringType implements BPlusTreeType<String>{
 
   private int size;
-  
+
   public StringType(int _size){
     size = _size;
   }
-  
+
   @Override
   public int getSize() {
+	  //Length of the string + 4 bytes for length info
     return size + 4;
   }
 
@@ -33,8 +34,8 @@ public class StringType implements BPlusTreeType<String>{
     for(int i = offset + 4;i < offset + length + 4;i ++){
       stringBytes[i - offset - 4] = data[i];
     }
-    
+
     return new String(stringBytes).trim();
   }
-  
+
 }
