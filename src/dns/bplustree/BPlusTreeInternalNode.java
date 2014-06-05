@@ -50,7 +50,7 @@ public class BPlusTreeInternalNode<K extends Comparable<K>, V> extends BPlusTree
 	}
 
 	@Override
-	public V find(K key) {
+	public List<V> find(K key) {
 		for (int i = 1; i < keys.size(); i++) {
 			if (key.compareTo(keys.get(i)) < 0) {
 				return file.getNode(children.get(i - 1)).find(key);

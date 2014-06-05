@@ -2,67 +2,53 @@ package dns.bplustree;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class FixedSizeList<E> extends AbstractList<E>{
-	private E[] elements;
-	private int size;
-	
-	public FixedSizeList(int maxSize){
-		elements = (E[])new Object[maxSize];
+	private List<E> elements;
+	private final int maxSize;
+
+	public FixedSizeList(int _maxSize){
+		elements = new ArrayList<E>(_maxSize);
+		maxSize = _maxSize;
 	}
-	
+
 	public boolean isFull(){
-		return size == elements.length;
+		return elements.size() == maxSize;
 	}
-	
-	@Override
+
 	public E get(int index) {
-		if(index < 0 || index >= size){
-			throw new ArrayIndexOutOfBoundsException(index);
-		}
-		return elements[index];
+		return elements.get(index);
 	}
-	
-	public List<E> removeSubList(int fromIndex, int toIndex){
-		if(fromIndex < 0 || toIndex < 0 || fromIndex > toIndex){
-			throw new ArrayIndexOutOfBoundsException(fromIndex);
-		}
-		
-		E[] data = (E[])new Object[toIndex - fromIndex];
-		System.arraycopy(elements, fromIndex, data, 0, toIndex - fromIndex);
-		System.arraycopy(elements, toIndex, elements, fromIndex, size - toIndex);
-		size -= (toIndex - fromIndex);
-		return new ArrayList<E>(Arrays.asList(data));
+
+	public List<E> subList(int fromIndex, int toIndex){
+		return elements.subList(fromIndex, toIndex);
 	}
-	
-	@Override
+
 	public void add(int index, E data){
-		if(size < elements.length && index < size){
-			for(int i = size - 1;i >= index;i --){
-				elements[i + 1] = elements[i];
-			}
-			elements[index] = data;
-			size ++;
+		if(!isFull()){
+			elements.add(index, data);
 		}
-		else if(index >= size){
-			throw new ArrayIndexOutOfBoundsException(index);
+		else{
+			throw new ArrayIndexOutOfBoundsException(size());
 		}
 	}
-	
-	@Override
+
+	public boolean remove(Object data){
+		return elements.remove(data);
+	}
+
+	public boolean removeAll(List<E> data){
+		return elements.removeAll(data);
+	}
+
 	public boolean add(E data){
-		if(size < elements.length){
-			elements[size ++] = data;
-			return true;
-		}
-		
-		return false;
+		if(isFull())throw new IllegalArgumentException();
+		elements.add(data);
+		return true;
 	}
-	
-	@Override
+
 	public int size() {
-		return size;
+		return elements.size();
 	}
 }

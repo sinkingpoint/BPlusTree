@@ -1,5 +1,7 @@
 package dns.bplustree;
 
+import java.util.List;
+
 import dns.Block;
 import dns.Bytes;
 
@@ -30,7 +32,7 @@ public class BPlusTreeHeaderNode<K extends Comparable<K>, V> extends BPlusTreeNo
 	}
 
 	@Override
-	public V find(K key) {
+	public List<V> find(K key) {
 		throw new UnsupportedOperationException();
 	}
 

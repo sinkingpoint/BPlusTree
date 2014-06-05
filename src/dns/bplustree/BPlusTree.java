@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 /**
@@ -58,7 +59,7 @@ public class BPlusTree<K extends Comparable<K>, V> implements Iterable<KeyValueP
       header.addObserver(file);
 	}
 
-	public V find(K key){
+	public List<V> find(K key){
 		if(header.getRoot() == null)return null;
 		return file.getNode(header.getRoot()).find(key);
 	}

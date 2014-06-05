@@ -35,7 +35,7 @@ public class DNSDB {
 			return;
 		}
 
-		if(new File(HOSTNAMES_FILE).length() > BPlusTreeFile.BLOCK_SIZE && new File(IPS_FILE).length() > BPlusTreeFile.BLOCK_SIZE){
+		if (new File(HOSTNAMES_FILE).length() > BPlusTreeFile.BLOCK_SIZE && new File(IPS_FILE).length() > BPlusTreeFile.BLOCK_SIZE) {
 			System.out.println("Tree found on disk. No need to reconstruct");
 			return;
 		}
@@ -61,7 +61,7 @@ public class DNSDB {
 		System.out.println("Loading Done");
 	}
 
-	public void flush() throws IOException{
+	public void flush() throws IOException {
 		hostNames.flush();
 		ipAddresses.flush();
 	}
@@ -72,7 +72,7 @@ public class DNSDB {
 	 * @param hostName
 	 * @return integer representation of an IP address, null if not found.
 	 */
-	public Integer findIP(String hostName) {
+	public List<Integer> findIP(String hostName) {
 		return ipAddresses.find(hostName);
 	}
 
@@ -82,7 +82,7 @@ public class DNSDB {
 	 * @param ip
 	 * @return null if not found
 	 */
-	public String findHostName(int ip) {
+	public List<String> findHostName(int ip) {
 		return hostNames.find(ip);
 	}
 
@@ -95,14 +95,15 @@ public class DNSDB {
 	 * @return true if valid, false otherwise
 	 */
 	public boolean testPair(int ip, String hostName) {
-		String host = findHostName(ip);
+		List<String> host = findHostName(ip);
 		if (host == null) {
-			Integer foundIP = findIP(hostName);
+			List<Integer> foundIP = findIP(hostName);
 			if (foundIP == null)
 				return false;
-			return ip == foundIP;
-		} else {
-			return host.equals(hostName);
+			return foundIP.contains(ip);
+		}
+		else {
+			return host.contains(hostName);
 		}
 	}
 
@@ -115,14 +116,15 @@ public class DNSDB {
 	 * @return true if valid, false otherwise
 	 */
 	public boolean testPair(String hostName, int ip) {
-		Integer foundIP = findIP(hostName);
+		List<Integer> foundIP = findIP(hostName);
 		if (foundIP == null) {
-			String foundName = findHostName(ip);
+			List<String> foundName = findHostName(ip);
 			if (foundName == null)
 				return false;
-			return hostName.equals(foundName);
-		} else {
-			return ip == foundIP;
+			return foundName.contains(hostName);
+		}
+		else {
+			return foundIP.contains(ip);
 		}
 	}
 
@@ -141,11 +143,11 @@ public class DNSDB {
 	 * Prints (to System.out) all the pairs in the HostNames index.
 	 */
 	public void iterateAll() {
-		for(KeyValuePair<Integer, String> entry : hostNames){
+		for (KeyValuePair<Integer, String> entry : hostNames) {
 			System.out.println(entry);
 		}
 
-		//System.out.println("Iterated " + entries.size() + " values");
+		// System.out.println("Iterated " + entries.size() + " values");
 	}
 
 	// FOR MARKING! PLEASE DO NOT MODIFY.

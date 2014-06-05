@@ -10,6 +10,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -41,18 +42,17 @@ public class GUI extends JFrame {
 		setLayout(new BorderLayout());
 		ipText = new JTextField();
 		ipText.setColumns(15);
-		
-		addWindowListener(new WindowAdapter(){
-		  public void windowClosing(WindowEvent e){
-		    try{
-		      dnsDB.flush();
-		    }
-		    catch(IOException ex){
-		      ex.printStackTrace();
-		    }
-		  }
+
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				try {
+					dnsDB.flush();
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
 		});
-		
+
 		ipText.addKeyListener(new KeyAdapter() {
 
 			@Override
@@ -157,17 +157,20 @@ public class GUI extends JFrame {
 			actionButton.setEnabled(false);
 			addButton.setText("Can't Add");
 			addButton.setEnabled(false);
-		} else if (ip.isEmpty()) {
+		}
+		else if (ip.isEmpty()) {
 			actionButton.setText("Find IP");
 			actionButton.setEnabled(true);
 			addButton.setText("Can't Add");
 			addButton.setEnabled(false);
-		} else if (name.isEmpty()) {
+		}
+		else if (name.isEmpty()) {
 			actionButton.setText("Find Host Name");
 			actionButton.setEnabled(true);
 			addButton.setText("Can't Add");
 			addButton.setEnabled(false);
-		} else {
+		}
+		else {
 			actionButton.setText("Test Name-IP Pair");
 			actionButton.setEnabled(true);
 			addButton.setText("Add Name-IP pair");
@@ -175,49 +178,54 @@ public class GUI extends JFrame {
 		}
 	}
 
+	private String ipListToString(List<Integer> ips) {
+		StringBuilder build = new StringBuilder();
+		for (int i = 0; i < ips.size(); i++) {
+			build.append(DNSDB.IPToString(ips.get(i)));
+			if (i != ips.size() - 1)
+				build.append(", ");
+		}
+
+		return build.toString();
+	}
+
 	private void handleAction() {
 		if (actionButton.getText().equals("Find IP")) {
-			Integer ip = dnsDB.findIP(nameText.getText());
+			List<Integer> ip = dnsDB.findIP(nameText.getText());
 			if (ip == null) {
-				JOptionPane.showMessageDialog(GUI.this,
-						"Could not find an IP address with host name: "
-								+ nameText.getText());
-			} else {
-				ipText.setText(DNSDB.IPToString(ip));
+				JOptionPane.showMessageDialog(GUI.this, "Could not find an IP address with host name: " + nameText.getText());
 			}
-		} else if (actionButton.getText().equals("Find Host Name")) {
+			else {
+				ipText.setText(ipListToString(ip));
+			}
+		}
+		else if (actionButton.getText().equals("Find Host Name")) {
 			Integer ip = DNSDB.stringToIP(ipText.getText());
 			if (ip == null) {
-				JOptionPane.showMessageDialog(GUI.this, "'" + ipText.getText()
-						+ "' is not a valid IP address.");
-			} else {
-				String name = dnsDB.findHostName(ip);
+				JOptionPane.showMessageDialog(GUI.this, "'" + ipText.getText() + "' is not a valid IP address.");
+			}
+			else {
+				List<String> name = dnsDB.findHostName(ip);
 				if (name == null) {
-					JOptionPane.showMessageDialog(GUI.this,
-							"Could not find a host name with IP address: "
-									+ ipText.getText());
-				} else {
-					nameText.setText(name);
+					JOptionPane.showMessageDialog(GUI.this, "Could not find a host name with IP address: " + ipText.getText());
+				}
+				else {
+					nameText.setText(name.toString());
 				}
 			}
-		} else if (actionButton.getText().equals("Test Name-IP Pair")) {
+		}
+		else if (actionButton.getText().equals("Test Name-IP Pair")) {
 			Integer ip = DNSDB.stringToIP(ipText.getText());
 			if (ip == null) {
-				JOptionPane.showMessageDialog(GUI.this, "'" + ipText.getText()
-						+ "' is not a valid IP address.");
-			} else {
+				JOptionPane.showMessageDialog(GUI.this, "'" + ipText.getText() + "' is not a valid IP address.");
+			}
+			else {
 				boolean valid = dnsDB.testPair(ip, nameText.getText());
 				if (valid) {
-					JOptionPane.showMessageDialog(
-							GUI.this,
-							"'" + ipText.getText()
-									+ "' is correctly mapped to '"
-									+ nameText.getText() + "'.");
-				} else {
-					JOptionPane.showMessageDialog(GUI.this,
-							"'" + ipText.getText()
-									+ "' is not the IP address for '"
-									+ nameText.getText() + "'.");
+					JOptionPane.showMessageDialog(GUI.this, "'" + ipText.getText() + "' is correctly mapped to '" + nameText.getText() + "'.");
+				}
+				else {
+					JOptionPane.showMessageDialog(GUI.this, "'" + ipText.getText() + "' is not the IP address for '" + nameText.getText() + "'.");
 				}
 			}
 		}
@@ -226,17 +234,14 @@ public class GUI extends JFrame {
 	private void handleAdd() {
 		Integer ip = DNSDB.stringToIP(ipText.getText());
 		if (ip == null) {
-			JOptionPane.showMessageDialog(GUI.this, "'" + ipText.getText()
-					+ "' is not a valid IP address.");
-		} else {
+			JOptionPane.showMessageDialog(GUI.this, "'" + ipText.getText() + "' is not a valid IP address.");
+		}
+		else {
 			if (dnsDB.add(nameText.getText(), ip)) {
-				JOptionPane.showMessageDialog(GUI.this, "'" + ipText.getText()
-						+ "' is now mapped to '" + nameText.getText() + "'.");
-			} else {
-				JOptionPane.showMessageDialog(
-						GUI.this,
-						"adding '" + ipText.getText() + "' - '"
-								+ nameText.getText() + "' failed.");
+				JOptionPane.showMessageDialog(GUI.this, "'" + ipText.getText() + "' is now mapped to '" + nameText.getText() + "'.");
+			}
+			else {
+				JOptionPane.showMessageDialog(GUI.this, "adding '" + ipText.getText() + "' - '" + nameText.getText() + "' failed.");
 			}
 		}
 	}

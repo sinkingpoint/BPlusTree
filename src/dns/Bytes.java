@@ -50,8 +50,7 @@ public class Bytes {
 
 	/** converts an array of four bytes to an integer. */
 	public static int bytesToInt(byte[] bytes) {
-		return (bytes[0] << 24) | ((bytes[1] & 0xff) << 16)
-				| ((bytes[2] & 0xff) << 8) | (bytes[3] & 0xff);
+		return (bytes[0] << 24) | ((bytes[1] & 0xff) << 16) | ((bytes[2] & 0xff) << 8) | (bytes[3] & 0xff);
 	}
 
 	/**
@@ -59,15 +58,12 @@ public class Bytes {
 	 * integer.
 	 */
 	public static int bytesToInt(byte[] bytes, int offset) {
-		return (bytes[offset] << 24) | ((bytes[offset + 1] & 0xff) << 16)
-				| ((bytes[offset + 2] & 0xff) << 8)
-				| (bytes[offset + 3] & 0xff);
+		return (bytes[offset] << 24) | ((bytes[offset + 1] & 0xff) << 16) | ((bytes[offset + 2] & 0xff) << 8) | (bytes[offset + 3] & 0xff);
 	}
 
 	/** converts four bytes to an integer. */
 	public static int bytesToInt(byte b1, byte b2, byte b3, byte b4) {
-		return (b1 << 24) | ((b2 & 0xff) << 16)
-				| ((b3 & 0xff) << 8) | (b4 & 0xff);
+		return (b1 << 24) | ((b2 & 0xff) << 16) | ((b3 & 0xff) << 8) | (b4 & 0xff);
 	}
 
 	/**
@@ -119,39 +115,24 @@ public class Bytes {
 
 	// TESTING CODE HERE
 	public static void main(String[] args) {
-		byte[] a = new byte[] { (byte) 0134, (byte) 0345, (byte) 0456,
-				(byte) 0753 };
-		byte[] b = new byte[] { (byte) 0134, (byte) 0345, (byte) 0546,
-				(byte) 0753 };
+		byte[] a = new byte[] { (byte) 0134, (byte) 0345, (byte) 0456, (byte) 0753 };
+		byte[] b = new byte[] { (byte) 0134, (byte) 0345, (byte) 0546, (byte) 0753 };
 		byte[] c = new byte[] { (byte) 0134, (byte) 0345, (byte) 0546 };
 
 		Comparator<byte[]> comp = new ByteArrayComparator();
 
-		System.out.printf("a: %d.%d.%d.%d\n", Bytes.byteToInt(a[0]),
-				Bytes.byteToInt(a[1]), Bytes.byteToInt(a[2]),
-				Bytes.byteToInt(a[3]));
-		System.out.printf("b: %d.%d.%d.%d\n", Bytes.byteToInt(b[0]),
-				Bytes.byteToInt(b[1]), Bytes.byteToInt(b[2]),
-				Bytes.byteToInt(b[3]));
-		System.out.printf("c: %d.%d.%d \n", Bytes.byteToInt(c[0]),
-				Bytes.byteToInt(c[1]), Bytes.byteToInt(c[2]));
-		System.out.printf("a?a : %d\na?b : %d\na?c : %d\nb?c : %d\n",
-				comp.compare(a, a), comp.compare(a, b), comp.compare(a, c),
-				comp.compare(b, c));
-		System.out.printf("b?b : %d\nb?a : %d\nc?a : %d\nc?b : %d\n",
-				comp.compare(b, b), comp.compare(b, a), comp.compare(c, a),
-				comp.compare(c, b));
-		System.out.println(bytesToInt((byte) 0134, (byte) 0345, (byte) 0456,
-				(byte) 0753));
+		System.out.printf("a: %d.%d.%d.%d\n", Bytes.byteToInt(a[0]), Bytes.byteToInt(a[1]), Bytes.byteToInt(a[2]), Bytes.byteToInt(a[3]));
+		System.out.printf("b: %d.%d.%d.%d\n", Bytes.byteToInt(b[0]), Bytes.byteToInt(b[1]), Bytes.byteToInt(b[2]), Bytes.byteToInt(b[3]));
+		System.out.printf("c: %d.%d.%d \n", Bytes.byteToInt(c[0]), Bytes.byteToInt(c[1]), Bytes.byteToInt(c[2]));
+		System.out.printf("a?a : %d\na?b : %d\na?c : %d\nb?c : %d\n", comp.compare(a, a), comp.compare(a, b), comp.compare(a, c), comp.compare(b, c));
+		System.out.printf("b?b : %d\nb?a : %d\nc?a : %d\nc?b : %d\n", comp.compare(b, b), comp.compare(b, a), comp.compare(c, a), comp.compare(c, b));
+		System.out.println(bytesToInt((byte) 0134, (byte) 0345, (byte) 0456, (byte) 0753));
 
 		System.out.println("intToBytes:");
 		int n = 0xa1b32ff3;
 		b = intToBytes(n);
-		System.out.printf(
-				"dec: %d\nhex: %h\nbytes : %3d.%3d.%3d.%3d\nint: %d\n", n, n,
-				Bytes.byteToInt(b[0]), Bytes.byteToInt(b[1]),
-				Bytes.byteToInt(b[2]), Bytes.byteToInt(b[3]),
-				Bytes.bytesToInt(b));
+		System.out
+				.printf("dec: %d\nhex: %h\nbytes : %3d.%3d.%3d.%3d\nint: %d\n", n, n, Bytes.byteToInt(b[0]), Bytes.byteToInt(b[1]), Bytes.byteToInt(b[2]), Bytes.byteToInt(b[3]), Bytes.bytesToInt(b));
 
 		/*
 		 * System.out.println("\n\nChecking intToBytes and bytesToInt");
@@ -160,7 +141,7 @@ public class Bytes {
 		 * Bytes.intToBytes(n1); int n2 = Bytes.bytesToInt(bs); if (n1!=n2)
 		 * System.out.println("\n"+n1+": "+n2); if (counter++ == 10000000)
 		 * {counter=1;System.out.println(n1);} } System.out.println(" OK");
-		 * 
+		 *
 		 * System.out.println(
 		 * "intToByte and byteToInt\ndec / hex -> to byte -> back"); for(int
 		 * i=0;i<256;i++){ byte bt =Bytes.intToByte(i);

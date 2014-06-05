@@ -40,7 +40,7 @@ public class BPlusTreeLeafNode<K extends Comparable<K>, V> extends BPlusTreeNode
       id = _id;
       keyType = _keyType;
       valueType = _valueType;
-      values = new ArrayList<KeyValuePair<K, V>>(MAX_LEAF_SIZE + 1);
+      values = new ArrayList<KeyValuePair<K, V>>(MAX_LEAF_SIZE + 2);
       MAX_LEAF_SIZE = (BPlusTreeFile.BLOCK_SIZE - 5) / (keyType.getSize() + valueType.getSize());
 	}
 
@@ -49,14 +49,30 @@ public class BPlusTreeLeafNode<K extends Comparable<K>, V> extends BPlusTreeNode
 	}
 
 	@Override
-	public V find(K key) {
+	public List<V> find(K key) {
+
+		int index = -1;
+
 		for(int i = 0;i < values.size();i ++){
 			if(values.get(i).getKey().equals(key)){
-				return values.get(i).getValue();
+				index = i;
+				break;
 			}
 		}
 
-		return null;
+		if(index == -1)return null;
+
+		List<V> found = new ArrayList<V>();
+		for(;index < values.size();index ++){
+			if(values.get(index).getKey().equals(key))found.add(values.get(index).getValue());
+		}
+
+		if(index == values.size() && nextID != 0){
+			List<V> nextFound = file.getNode(nextID).find(key);
+			if(nextFound != null)found.addAll(nextFound);
+		}
+
+		return found;
 	}
 
 	@Override
