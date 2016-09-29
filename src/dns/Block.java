@@ -48,6 +48,19 @@ public class Block {
 		bytes[offset + 3] = (byte) (value & 0xff);
 	}
 
+	// add by kzx
+	public void setLong(long value, int offset){
+		bytes[offset] = (byte) (value >>> 56);
+		bytes[offset + 1] = (byte) (value >>> 48 & 0xff);
+		bytes[offset + 2] = (byte) (value >>> 40 & 0xff);
+		bytes[offset + 3] = (byte) (value >>> 32 & 0xff);
+		bytes[offset + 4] = (byte) (value >>> 24 & 0xff);
+		bytes[offset + 5] = (byte) (value >>> 16 & 0xff);
+		bytes[offset + 6] = (byte) (value >>> 8 & 0xff);
+		bytes[offset + 7] = (byte) (value & 0xff);
+
+	}
+
 	public String getString(int offset, int length) {
 		return new String(Arrays.copyOfRange(bytes, offset, offset + length));
 	}
